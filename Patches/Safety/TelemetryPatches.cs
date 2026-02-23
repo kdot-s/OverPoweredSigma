@@ -22,7 +22,9 @@
 using HarmonyLib;
 using JetBrains.Annotations;
 using Liv.Lck.Telemetry;
+using PlayFab;
 using PlayFab.EventsModels;
+using System.Collections.Generic;
 using static iiMenu.Patches.PatchHandler;
 
 namespace iiMenu.Patches.Safety
@@ -69,6 +71,14 @@ namespace iiMenu.Patches.Safety
         public class SendTelemetry
         {
             private static bool Prefix(LckTelemetryEvent lckTelemetryEvent) =>
+                !enabled;
+        }
+
+        [PatchOnAwake]
+        [HarmonyPatch(typeof(PlayFabEventsAPI), nameof(PlayFabEventsAPI.WriteTelemetryEvents))]
+        public class WriteTelemetryEvents
+        {
+            private static bool Prefix(WriteEventsRequest request, System.Action<WriteEventsResponse> resultCallback, System.Action<PlayFabError> errorCallback, object customData = null, Dictionary<string, string> extraHeaders = null) =>
                 !enabled;
         }
     }
